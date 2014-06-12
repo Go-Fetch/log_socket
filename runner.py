@@ -1,3 +1,7 @@
+import os
+
+from twisted.web.server import Site
+from twisted.web.static import File
 from twisted.internet import reactor, protocol
 from autobahn.twisted.websocket import WebSocketServerFactory, \
                                WebSocketServerProtocol, \
@@ -79,6 +83,10 @@ class WebSocketProcessOutputterThingFactory(WebSocketServerFactory):
 
 if __name__ == "__main__":
     print "Running process %s with args %s" % (COMMAND_NAME, COMMAND_ARGS)
-    factory = WebSocketProcessOutputterThingFactory("ws://%s:9000" % ("localhost" if LOCAL_ONLY else "0.0.0.0"), debug=False)
+    factory = WebSocketProcessOutputterThingFactory("ws://%s:9010" % ("localhost" if LOCAL_ONLY else "0.0.0.0"), debug=False)
     listenWS(factory)
+
+    resource = File(os.path.abspath(os.path.dirname(__file__)))
+    static_factory = Site(resource)
+    reactor.listenTCP(8080, static_factory)
     reactor.run()
